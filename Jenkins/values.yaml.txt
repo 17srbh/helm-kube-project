@@ -1,0 +1,50 @@
+# Global Configurations
+global:
+  namespace: devops-tools
+  storageClassName: local-storage
+
+# Jenkins configuration
+jenkins:
+  name: jenkins
+  replicas: 1
+  app: jenkins
+  image: 
+    repository: srbhdockerhub1st/anisble-jenkins-root-docker-image-new
+    tag: latest
+  resources:
+    limits:
+      memory: "3Gi"
+      cpu: "1000m"
+    requests:
+      memory: "2Gi"
+      cpu: "500m"
+  persistence:
+    enabled: true
+    pvName: jenkins-pv-volume
+    pvClaim: jenkins-pv-claim
+    storageSize: 5Gi
+    hostPath: /mnt/jenkins
+    accessModes: ReadWriteOnce
+  service:
+    nodePortHttp: 30000   # You can set to any port in the range 30000-32767
+    nodePortAgent: 30001  # You can set to any port in the range 30000-32767
+
+# Ansible configuration
+ansible:
+  persistence:
+    enabled: true
+    pvName: ansible-pv-volume
+    pvClaim: ansible-pv-claim
+    storageSize: 500Mi
+    hostPath: /mnt/ansible
+    accessModes: ReadWriteOnce
+
+# Node Exporter configuration
+nodeExporter:
+  persistence:
+    enabled: true
+    pvName: node-exporter-pv-volume
+    pvClaim: node-exporter-pv-claim
+    storageSize: 500Mi
+    hostPath: /mnt/node-exporter
+    accessModes: ReadWriteMany

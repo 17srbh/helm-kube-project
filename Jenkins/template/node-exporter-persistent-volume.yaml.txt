@@ -1,0 +1,46 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.nodeExporter.storageClassName }}
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.nodeExporter.pvName }}
+  labels:
+    type: local
+spec:
+  storageClassName: {{ .Values.nodeExporter.storageClassName }}
+  claimRef:
+    name: {{ .Values.nodeExporter.pvClaim }}
+    namespace: {{ .Values.namespace }}
+  capacity:
+    storage: {{ .Values.nodeExporter.storageSize }}
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: {{ .Values.nodeExporter.hostPath }}
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .Values.nodeExporter.nodeAffinity }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.nodeExporter.pvClaim }}
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: {{ .Values.nodeExporter.storageClassName }}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.nodeExporter.storageSize }}

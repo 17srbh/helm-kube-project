@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.jenkins.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.jenkins.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.jenkins.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.jenkins.app }}
+    spec:
+      containers:
+      - name: {{ .Values.jenkins.name }}
+        image: {{ .Values.jenkins.image }}
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+        securityContext:
+          allowPrivilegeEscalation: true
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsUser: 0
+        volumeMounts:
+        - name: jenkins-data
+          mountPath: /var/jenkins_home
+        - name: ansible-data
+          mountPath: /project/ansible
+        - name: node-exporter-data
+          mountPath: /project/node-exporter
+        resources:
+          limits:
+            memory: {{ .Values.jenkins.resources.limits.memory }}
+          requests:
+            memory: {{ .Values.jenkins.resources.requests.memory }}
+      volumes:
+      - name: jenkins-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.jenkins.pvClaim }}
+      - name: ansible-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.ansible.pvClaim }}
+      - name: node-exporter-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.nodeExporter.pvClaim }}

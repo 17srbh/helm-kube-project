@@ -1,0 +1,65 @@
+# Global Configurations
+global:
+  namespace: devops-tools
+  storageClassName: local-storage
+  nodeAffinity: minikube-m02
+
+# Jenkins configuration
+jenkins:
+  name: jenkins
+  replicas: 1
+  app: jenkins
+  image: 
+    repository: srbhdockerhub1st/anisble-jenkins-root-docker-image-new
+    tag: latest                     # Option to configure image tag
+  resources:
+    limits:
+      memory: "3Gi"
+      cpu: "1000m"                  # Added CPU limit
+    requests:
+      memory: "2Gi"
+      cpu: "500m"                   # Added CPU request
+  persistence:
+    enabled: true                   # Flag to enable/disable persistence
+    storageClassName: {{ .Values.global.storageClassName }}
+    pvName: jenkins-pv-volume
+    pvClaim: jenkins-pv-claim
+    storageSize: 5Gi
+    hostPath: /mnt/jenkins
+    nodeAffinity: {{ .Values.global.nodeAffinity }}
+
+# Ansible configuration
+ansible:
+  persistence:
+    enabled: true                   # Flag to enable/disable persistence
+    storageClassName: {{ .Values.global.storageClassName }}
+    pvName: ansible-pv-volume
+    pvClaim: ansible-pv-claim
+    storageSize: 500Mi
+    hostPath: /mnt/ansible
+    nodeAffinity: {{ .Values.global.nodeAffinity }}
+  resources:
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
+    requests:
+      memory: "300Mi"
+      cpu: "300m"
+
+# Node Exporter configuration
+nodeExporter:
+  persistence:
+    enabled: true                   # Flag to enable/disable persistence
+    storageClassName: {{ .Values.global.storageClassName }}
+    pvName: node-exporter-pv-volume
+    pvClaim: node-exporter-pv-claim
+    storageSize: 500Mi
+    hostPath: /mnt/node-exporter
+    nodeAffinity: {{ .Values.global.nodeAffinity }}
+  resources:
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+    requests:
+      memory: "128Mi"
+      cpu: "100m"

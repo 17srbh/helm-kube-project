@@ -1,0 +1,38 @@
+apiVersion: v2
+name: jenkins
+description: A Helm chart for Jenkins with Ansible, Node Exporter, and Prometheus integration
+type: application
+version: 1.0.0
+appVersion: "2.346.2"  # Replace with the actual Jenkins version you are using
+
+# Optional dependencies
+dependencies:
+  - name: prometheus
+    version: "14.11.1"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: prometheus.enabled
+
+maintainers:
+  - name: Saurabh Srivastava
+    email: sayhitosaurabhg@gmail.com
+
+sources:
+  - https://github.com/your-repo/jenkins-helm-chart  # Replace with actual repo if needed
+
+keywords:
+  - jenkins
+  - ansible
+  - node-exporter
+  - prometheus
+
+home: https://www.jenkins.io/
+
+icon: https://www.jenkins.io/images/logos/jenkins/256.png
+
+# Additional metadata
+annotations:
+  category: CI/CD Tools
+  createdAt: "2024-09-12"  # Update with the actual date of creation
+
+# Minimum Helm version required
+kubeVersion: ">=1.19.0"

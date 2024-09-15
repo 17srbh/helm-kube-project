@@ -1,0 +1,46 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.jenkins.storageClassName }}
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.jenkins.pvName }}
+  labels:
+    type: local
+spec:
+  storageClassName: {{ .Values.jenkins.storageClassName }}
+  claimRef:
+    name: {{ .Values.jenkins.pvClaim }}
+    namespace: {{ .Values.namespace }}
+  capacity:
+    storage: {{ .Values.jenkins.storageSize }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.jenkins.hostPath }}
+  volumeMode: Filesystem
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .Values.jenkins.nodeAffinity }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.jenkins.pvClaim }}
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: {{ .Values.jenkins.storageClassName }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.jenkins.storageSize }}
